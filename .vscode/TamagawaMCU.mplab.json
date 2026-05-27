@@ -36,7 +36,9 @@
                 "compiler.keep-inline": true,
                 "compiler.code-model": "large-code",
                 "global.common-include-directories": [
-                    "d:/Project Docs/VS Code PRJ/TamagawaMCU/TamagawaMCU/TamagawaMCU"
+                    "TamagawaMCU/mcc",
+                    "TamagawaMCU/mcc/user",
+                    "TamagawaMCU/mcc/mcc_generated_files"
                 ]
             }
         }
