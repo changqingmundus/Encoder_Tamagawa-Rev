@@ -3,7 +3,7 @@
 
 #include "xc.h"
 #include "libpic30.h"
-#include "D:\Project Docs\VS Code PRJ\TamagawaMCU\TamagawaMCU\TamagawaMCU\mcc\mcc_generated_files\system\pins.h"
+#include "D:\Project Docs\VS Code PRJ\Git Remote Works\Encoder_Tamagawa-Dev\TamagawaMCU\mcc\mcc_generated_files\system\pins.h"
 
 #define ENCODER_SET_CLOCK_PIN()   MA_SetHigh()
 #define ENCODER_CLR_CLOCK_PIN()   MA_SetLow()
