@@ -1,6 +1,6 @@
-#include "..\tamagawa.h"
-#include "D:\Project Docs\VS Code PRJ\Git Remote Works\Encoder_Tamagawa-Dev\TamagawaMCU\mcc\mcc_generated_files\uart\uart1.h"
-#include "..\encoder.h"
+#include "tamagawa.h"
+#include "uart\uart1.h"
+#include "encoder.h"
 #include <stdint.h>
 
 TamagawaInterface ti;

@@ -18,20 +18,20 @@
     EXCEED AMOUNT OF FEES, IF ANY, YOU PAID DIRECTLY TO MICROCHIP FOR 
     THIS SOFTWARE.
 */
-#include "mcc_generated_files/dee/dee.h"
-#include "mcc_generated_files/system/system.h"
-#include "mcc_generated_files/uart/uart1.h"
-#include "user/encoder.h"
-#include "user/tamagawa.h"
+#include "dee/dee.h"
+#include "system/system.h"
+#include "uart/uart1.h"
+#include "encoder.h"
+#include "tamagawa.h"
 
 /*
     Main application
 */
 
-#include "user/tamagawa.h"
-#include "user/encoder.h"
-#include "mcc_generated_files/uart/uart1.h"
-#include "mcc_generated_files/timer/sccp1.h"
+#include "tamagawa.h"
+#include "encoder.h"
+#include "uart/uart1.h"
+#include "timer/sccp1.h"
 #include <stdint.h>
 
 

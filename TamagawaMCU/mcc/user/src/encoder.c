@@ -1,6 +1,6 @@
-#include "..\encoder.h"
-#include "D:\Project Docs\VS Code PRJ\Git Remote Works\Encoder_Tamagawa-Dev\TamagawaMCU\mcc\mcc_generated_files\timer\delay.h"
-#include "D:\Project Docs\VS Code PRJ\Git Remote Works\Encoder_Tamagawa-Dev\TamagawaMCU\mcc\mcc_generated_files\uart\uart2.h"
+#include "user\encoder.h"
+#include "timer\delay.h"
+#include "uart\uart2.h"
 
 
 ENCODER encoder;
