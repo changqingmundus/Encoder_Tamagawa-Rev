@@ -1,0 +1,99 @@
+{
+    "version": "1.9",
+    "configurations": [
+        {
+            "name": "default",
+            "id": "conf1",
+            "device": "dsPIC33CK256MP502",
+            "imagePath": "./out/TamagawaMCU/default.elf",
+            "packs": [
+                {
+                    "name": "dsPIC33CK-MP_DFP",
+                    "vendor": "Microchip",
+                    "version": "1.15.423"
+                }
+            ],
+            "fileSet": "default",
+            "toolchain": "default-XC16"
+        }
+    ],
+    "propertyGroups": [
+        {
+            "name": "default-XC16",
+            "type": "toolchain",
+            "provider": "microchip.toolchains:xc16@2.10",
+            "properties": {
+                "compiler.isolate-each-function": true,
+                "compiler.optimization-level": "-O1",
+                "compiler.place-data-into-section": true,
+                "linker.heap-size": "0",
+                "linker.remove-unused-sections": true,
+                "compiler++.isolate-each-function": true,
+                "compiler++.optimization-level": "-O1",
+                "C30.code-model": [
+                    "large-code"
+                ],
+                "compiler.keep-inline": true,
+                "compiler.code-model": "large-code",
+                "global.common-include-directories": [
+                    "d:/Project Docs/VS Code PRJ/TamagawaMCU/TamagawaMCU/TamagawaMCU"
+                ]
+            }
+        }
+    ],
+    "fileSets": [
+        {
+            "name": "default",
+            "files": [
+                {
+                    "include": "**/*",
+                    "exclude": "**/@(build|_build|out|cmake|.vscode)/**/*"
+                },
+                "TamagawaMCU/mcc/mcc_generated_files/system/dmt.h",
+                "TamagawaMCU/mcc/mcc_generated_files/system/src/dmt_asm.s",
+                "TamagawaMCU/mcc/mcc_generated_files/system/src/dmt.c",
+                "TamagawaMCU/mcc/mcc_generated_files/system/reset.h",
+                "TamagawaMCU/mcc/mcc_generated_files/system/reset_types.h",
+                "TamagawaMCU/mcc/mcc_generated_files/system/src/reset.c",
+                "TamagawaMCU/mcc/mcc_generated_files/flash/src/flash_asm.s",
+                "TamagawaMCU/mcc/mcc_generated_files/flash/flash_types.h",
+                "TamagawaMCU/mcc/mcc_generated_files/flash/src/flash.c",
+                "TamagawaMCU/mcc/mcc_generated_files/flash/flash_interface.h",
+                "TamagawaMCU/mcc/mcc_generated_files/flash/flash_hardware.h",
+                "TamagawaMCU/mcc/mcc_generated_files/flash/flash.h",
+                "TamagawaMCU/mcc/mcc_generated_files/timer/src/delay.c",
+                "TamagawaMCU/mcc/mcc_generated_files/timer/delay.h",
+                "TamagawaMCU/mcc/mcc_generated_files/timer/sccp1.h",
+                "TamagawaMCU/mcc/mcc_generated_files/timer/timer_interface.h",
+                "TamagawaMCU/mcc/mcc_generated_files/timer/src/sccp1.c",
+                "TamagawaMCU/mcc/mcc_generated_files/system/src/clock.c",
+                "TamagawaMCU/mcc/mcc_generated_files/system/clock.h",
+                "TamagawaMCU/mcc/mcc_generated_files/spi_host/spi1.h",
+                "TamagawaMCU/mcc/mcc_generated_files/spi_host/src/spi1.c",
+                "TamagawaMCU/mcc/mcc_generated_files/spi_host/spi_host_interface.h",
+                "TamagawaMCU/mcc/mcc_generated_files/uart/uart_interface.h",
+                "TamagawaMCU/mcc/mcc_generated_files/uart/uart_types.h",
+                "TamagawaMCU/mcc/mcc_generated_files/uart/uart1.h",
+                "TamagawaMCU/mcc/mcc_generated_files/uart/src/uart1.c",
+                "TamagawaMCU/mcc/mcc_generated_files/uart/src/uart2.c",
+                "TamagawaMCU/mcc/mcc_generated_files/uart/uart2.h",
+                "TamagawaMCU/mcc/mcc_generated_files/system/src/config_bits.c",
+                "TamagawaMCU/mcc/mcc_generated_files/system/system.h",
+                "TamagawaMCU/mcc/mcc_generated_files/system/system_types.h",
+                "TamagawaMCU/mcc/mcc_generated_files/system/src/system.c",
+                "TamagawaMCU/mcc/main.c",
+                "TamagawaMCU/mcc/mcc_generated_files/system/src/pins.c",
+                "TamagawaMCU/mcc/mcc_generated_files/system/pins.h",
+                "TamagawaMCU/mcc/mcc_generated_files/system/src/where_was_i.s",
+                "TamagawaMCU/mcc/mcc_generated_files/system/src/interrupt.c",
+                "TamagawaMCU/mcc/mcc_generated_files/system/interrupt.h",
+                "TamagawaMCU/mcc/mcc_generated_files/system/src/traps.c",
+                "TamagawaMCU/mcc/mcc_generated_files/system/interrupt_types.h",
+                "TamagawaMCU/mcc/mcc_generated_files/system/traps.h",
+                "TamagawaMCU/mcc/mcc_generated_files/system/watchdog.h",
+                "TamagawaMCU/mcc/mcc_generated_files/dee/src/dee.c",
+                "TamagawaMCU/mcc/mcc_generated_files/dee/dee.h"
+            ]
+        }
+    ]
+}
