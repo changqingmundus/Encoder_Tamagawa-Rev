@@ -13,7 +13,7 @@
 */
 
 /*
-© [2026] Microchip Technology Inc. and its subsidiaries.
+? [2026] Microchip Technology Inc. and its subsidiaries.
 
     Subject to your compliance with these terms, you may use Microchip 
     software and any derivatives exclusively with Microchip products. 
@@ -45,7 +45,7 @@
   @brief    This macro is used to read the System clock (FOSC) Frequency configured in 
             the MCC Melody User Interface
 */
-#define CLOCK_SystemFrequencyGet()        (72000000UL)
+#define CLOCK_SystemFrequencyGet()        (80000000UL)
 
 /** 
   @ingroup  clockdriver

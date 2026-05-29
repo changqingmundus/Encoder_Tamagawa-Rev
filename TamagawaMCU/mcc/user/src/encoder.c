@@ -1,6 +1,7 @@
-#include "user\encoder.h"
-#include "timer\delay.h"
-#include "uart\uart2.h"
+#include "encoder.h"
+#include "timer/delay.h"
+#include "uart/uart2.h"
+#include "system/pins.h"
 
 
 ENCODER encoder;
@@ -8,21 +9,13 @@ ENCODER encoder;
 int Encoder_GetDataSize(ENCODER *encoder){
     if(encoder == NULL || encoder ->addr == 0x00)
         return -1;
-    return encoder->mtSize + encoder->stSize + 2;//ERR+WARN+CRC = 8
+    return encoder->mtSize + encoder->stSize + 1;//ERR+WARN+CRC = 8
 }
 
-#define DELAY_NOPS(n) \
-    do { \
-        for(int i = 0; i < (n); i++) { __asm("nop"); } \
-    } while(0)
-
-// 用法：DELAY_NOPS(8);  // 执行8次nop
-
-
-/*static void Delay_xuS(uint16_t x)               //实现微秒延时
+static void Delay_xuS(uint16_t x)               //实现微秒延时
 {
     DELAY_microseconds(x);
-}*/
+}
 
 
 
@@ -36,20 +29,13 @@ static uint32_t Encoder_ReadData_Bits(ENCODER *encoder, uint16_t length)
         
         //给出读取时钟，采用SSI总线
         ENCODER_SET_CLOCK_PIN();
-        DELAY_NOPS(10);
-        //Delay_xuS(ENCODER_CLOCK_TIME);
+        Delay_xuS(ENCODER_CLOCK_TIME);
         ENCODER_CLR_CLOCK_PIN();
         dataIn = (uint8_t) ENCODER_GET_DATA_FROM();
-        DELAY_NOPS(10);
-        //Delay_xuS(ENCODER_CLOCK_TIME);
+        Delay_xuS(ENCODER_CLOCK_TIME);
 
         data = (data << 1) | dataIn;
     }
-    //uint32_t data = Encoder_ReadData_Bits(&encoder, length);
-    //UART2_Drv.Write((data >> 24) & 0xFF);
-    //UART2_Drv.Write((data >> 16) & 0xFF);
-    //UART2_Drv.Write((data >> 8) & 0xFF);
-    //UART2_Drv.Write(data & 0xFF);
 
     return data;
 }
@@ -65,16 +51,12 @@ void Encoder_Read_Data(ENCODER *encoder)
 
     //启动通讯
     ENCODER_CLR_CLOCK_PIN();
-    DELAY_NOPS(15);
-    //Delay_xuS(ENCODER_CLOCK_PRELOW_TIME);
+    Delay_xuS(ENCODER_CLOCK_PRELOW_TIME);
 
     uint32_t mtData = Encoder_ReadData_Bits(encoder, encoder->mtSize*8);
-    //uint32_t mtData = Encoder_ReadData_Bits(encoder, 12);
     uint32_t stData = Encoder_ReadData_Bits(encoder, encoder->stSize*8);
-    //uint32_t stData = Encoder_ReadData_Bits(encoder, 19);
-    uint8_t err_warn_crcData = Encoder_ReadData_Bits(encoder, 0);
-    DELAY_NOPS(20);
-    //Delay_xuS(ENCODER_CLOCK_POSTHIGH_TIME);
+    uint8_t err_warn_crcData = Encoder_ReadData_Bits(encoder, 8);
+    Delay_xuS(ENCODER_CLOCK_POSTHIGH_TIME);
 
     ENCODER_SET_CLOCK_PIN();
 

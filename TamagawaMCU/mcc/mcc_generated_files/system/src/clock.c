@@ -13,7 +13,7 @@
 */
 
 /*
-© [2026] Microchip Technology Inc. and its subsidiaries.
+? [2026] Microchip Technology Inc. and its subsidiaries.
 
     Subject to your compliance with these terms, you may use Microchip 
     software and any derivatives exclusively with Microchip products. 
@@ -56,8 +56,8 @@ void CLOCK_Initialize(void)
     }
     // RCDIV FRC/1; PLLPRE 1:1; DOZE 1:8; DOZEN disabled; ROI disabled; 
    CLKDIV = 0x3001U;
-    // PLLDIV 54; 
-   PLLFBD = 0x36U;
+    // PLLDIV 60; 
+   PLLFBD = 0x3CU;
     // TUN Center frequency; 
    OSCTUN = 0x0U;
     // PLLPOST 1:3; VCODIV FVCO/4; POST2DIV 1:1; 
@@ -97,10 +97,10 @@ void CLOCK_Initialize(void)
     /*  
        Input frequency                               :  8.00 MHz
        Clock source                                  :  Primary Oscillator with PLL
-       System frequency (Fosc)                       :  72.00 MHz [(8.00 MHz / 1) * 54 / 3 / 2 = 72.00 MHz]
-       PLL VCO frequency (Fvco)                      :  432.00 MHz [(8.00 MHz / 1) * 54 = 432.00 MHz]
-       PLL output frequency (Fpllo)                  :  144.00 MHz [(8.00 MHz / 1) * 54 / 3 = 144.00 MHz]
-       PLL VCO divider frequency (Fvcodiv)           :  108.00 MHz [432.00 MHz / 4 = 108.00 MHz]
+       System frequency (Fosc)                       :  80.00 MHz [(8.00 MHz / 1) * 60 / 3 / 2 = 80.00 MHz]
+       PLL VCO frequency (Fvco)                      :  480.00 MHz [(8.00 MHz / 1) * 60 = 480.00 MHz]
+       PLL output frequency (Fpllo)                  :  160.00 MHz [(8.00 MHz / 1) * 60 / 3 = 160.00 MHz]
+       PLL VCO divider frequency (Fvcodiv)           :  120.00 MHz [480.00 MHz / 4 = 120.00 MHz]
        Clock switching enabled                       :  true
        Clock source when device boots                :  FRC Oscillator
        Auxiliary clock source                        :  Primary Oscillator

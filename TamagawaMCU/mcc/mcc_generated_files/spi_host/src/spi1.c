@@ -16,7 +16,7 @@
 */
 
 /*
-© [2026] Microchip Technology Inc. and its subsidiaries.
+? [2026] Microchip Technology Inc. and its subsidiaries.
 
     Subject to your compliance with these terms, you may use Microchip 
     software and any derivatives exclusively with Microchip products. 
@@ -81,7 +81,7 @@ static const struct SPI1_HOST_CONFIG config[] = {
                                         { 
                                             /*Configuration setting for HOST_CONFIG.
                                             SPI Mode : Mode 1, Sampled at : Middle, Data Width : 8 bits, Clock Frequency : 125 kHz*/
-                                            0x8fU,//SPI1BRGL
+                                            0x9fU,//SPI1BRGL
                                             0x21U,//SPI1CON1L
                                         },
                                     };
@@ -90,8 +90,8 @@ static const struct SPI1_HOST_CONFIG config[] = {
 
 void SPI1_Initialize (void)
 {
-    // SPIBRGL 143; 
-    SPI1BRGL = 0x8FU;
+    // SPIBRGL 159; 
+    SPI1BRGL = 0x9FU;
     // AUDEN disabled; FRMEN disabled; AUDMOD I2S; FRMSYPW One clock wide; AUDMONO stereo; FRMCNT 0x0; MSSEN disabled; FRMPOL disabled; IGNROV disabled; SPISGNEXT not sign-extended; FRMSYNC disabled; URDTEN disabled; IGNTUR disabled; 
     SPI1CON1H = 0x0U;
     // WLENGTH 0; 

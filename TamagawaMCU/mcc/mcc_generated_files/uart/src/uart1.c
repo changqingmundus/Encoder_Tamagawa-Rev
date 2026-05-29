@@ -1,21 +1,21 @@
 /**
  * UART1 Generated Driver Source File
  * 
- * @file      uart1.c
+ * @file        uart1.c
+ *  
+ * @ingroup     uartdriver
+ *  
+ * @brief       This is the generated driver source file for the UART1 driver
  *            
- * @ingroup   uartdriver
- *            
- * @brief     This is the generated driver source file for the UART1 driver.
- *            
- * @skipline @version   Firmware Driver Version 1.7.0
+ * @skipline @version     Firmware Driver Version 1.7.0
  *
- * @skipline @version   PLIB Version 1.5.4
- *            
- * @skipline  Device : dsPIC33CK256MP502
+ * @skipline @version     PLIB Version 1.5.4
+ *
+ * @skipline    Device : dsPIC33CK256MP502
 */
 
 /*
-© [2026] Microchip Technology Inc. and its subsidiaries.
+? [2026] Microchip Technology Inc. and its subsidiaries.
 
     Subject to your compliance with these terms, you may use Microchip 
     software and any derivatives exclusively with Microchip products. 
@@ -36,14 +36,14 @@
 */
 
 // Section: Included Files
+#include <stdbool.h>
 #include <stdint.h>
 #include <stddef.h>
 #include <xc.h>
-#include <stddef.h>
 #include "../uart1.h"
 
 // Section: Macro Definitions
-#define UART1_CLOCK 36000000U
+#define UART1_CLOCK 40000000U
 #define UART1_BAUD_TO_BRG_WITH_FRACTIONAL(x) (UART1_CLOCK/(x))
 #define UART1_BAUD_TO_BRG_WITH_BRGH_1(x) (UART1_CLOCK/(4U*(x))-1U)
 #define UART1_BAUD_TO_BRG_WITH_BRGH_0(x) (UART1_CLOCK/(16U*(x))-1U)
@@ -51,8 +51,8 @@
 #define UART1_BRG_TO_BAUD_WITH_BRGH_1(x) (UART1_CLOCK/(4U*((x)+1U)))
 #define UART1_BRG_TO_BAUD_WITH_BRGH_0(x) (UART1_CLOCK/(16U*((x)+1U)))
 
-#define UART1_MIN_ACHIEVABLE_BAUD_WITH_FRACTIONAL 34U
-#define UART1_MIN_ACHIEVABLE_BAUD_WITH_BRGH_1 9U
+#define UART1_MIN_ACHIEVABLE_BAUD_WITH_FRACTIONAL 38U
+#define UART1_MIN_ACHIEVABLE_BAUD_WITH_BRGH_1 10U
 
 // Section: Driver Interface
 
@@ -66,8 +66,8 @@ const struct UART_INTERFACE UART1_Drv = {
     .IsTxDone = &UART1_IsTxDone,
     .TransmitEnable = &UART1_TransmitEnable,
     .TransmitDisable = &UART1_TransmitDisable,
-    .TransmitInterruptEnable = NULL,
-    .TransmitInterruptDisable = NULL,
+    .TransmitInterruptEnable = &UART1_TransmitInterruptEnable,
+    .TransmitInterruptDisable = &UART1_TransmitInterruptDisable,
     .AutoBaudSet = &UART1_AutoBaudSet,
     .AutoBaudQuery = &UART1_AutoBaudQuery,
     .AutoBaudEventEnableGet = &UART1_AutoBaudEventEnableGet,
@@ -76,15 +76,18 @@ const struct UART_INTERFACE UART1_Drv = {
     .BaudRateSet = &UART1_BaudRateSet,
     .BaudRateGet = &UART1_BaudRateGet,
     .ErrorGet = &UART1_ErrorGet,
-    .RxCompleteCallbackRegister = NULL,
-    .TxCompleteCallbackRegister = NULL,
-    .TxCollisionCallbackRegister = NULL,
-    .FramingErrorCallbackRegister = NULL,
-    .OverrunErrorCallbackRegister = NULL,
-    .ParityErrorCallbackRegister = NULL,
+    .RxCompleteCallbackRegister = &UART1_RxCompleteCallbackRegister,
+    .TxCompleteCallbackRegister = &UART1_TxCompleteCallbackRegister,
+    .TxCollisionCallbackRegister = &UART1_TxCollisionCallbackRegister,
+    .FramingErrorCallbackRegister = &UART1_FramingErrorCallbackRegister,
+    .OverrunErrorCallbackRegister = &UART1_OverrunErrorCallbackRegister,
+    .ParityErrorCallbackRegister = &UART1_ParityErrorCallbackRegister,
 };
 
 // Section: Private Variable Definitions
+
+static volatile bool softwareBufferEmpty = true;
+static bool txInterruptUsed = true;
 static union
 {
     struct
@@ -99,27 +102,61 @@ static union
     size_t status;
 } uartError;
 
-// Section: UART1 APIs
+// Section: Data Type Definitions
+
+static void (*UART1_RxCompleteHandler)(void);
+static void (*UART1_TxCompleteHandler)(void);
+static void (*UART1_TxCollisionHandler)(void);
+static void (*UART1_FramingErrorHandler)(void);
+static void (*UART1_OverrunErrorHandler)(void);
+static void (*UART1_ParityErrorHandler)(void);
+
+// Section: Driver Interface
 
 void UART1_Initialize(void)
 {
-/*    
-     Set the UART1 module to the options selected in the user interface.
-     Make sure to set LAT bit corresponding to TxPin as high before UART initialization
-*/
+    IEC0bits.U1TXIE = 0;
+    IEC0bits.U1RXIE = 0;
+    IEC11bits.U1EVTIE = 0;
+
     // URXEN ; RXBIMD ; UARTEN disabled; MOD Asynchronous 8-bit UART; UTXBRK ; BRKOVR ; UTXEN ; USIDL ; WAKE ; ABAUD ; BRGH ; 
     U1MODE = 0x0U;
     // STSEL 1 Stop bit sent, 1 checked at RX; BCLKMOD enabled; SLPEN ; FLO ; BCLKSEL FOSC/2; C0EN ; RUNOVF ; UTXINV ; URXINV ; HALFDPLX ; 
     U1MODEH = 0x800U;
     // OERIE ; RXBKIF ; RXBKIE ; ABDOVF ; OERR ; TXCIE ; TXCIF ; FERIE ; TXMTIE ; ABDOVE ; CERIE ; CERIF ; PERIE ; 
     U1STA = 0x80U;
-    // URXISEL ; UTXBE ; UTXISEL ; URXBE ; STPMD ; TXWRE ; 
+    // URXISEL ; UTXBE ; UTXISEL TX_BUF_EMPTY; URXBE ; STPMD ; TXWRE ; 
     U1STAH = 0x2EU;
-    // BaudRate 115015.97; Frequency 36000000 Hz; BRG 313; 
-    U1BRG = 0x139U;
+    // BaudRate 115273.78; Frequency 40000000 Hz; BRG 347; 
+    U1BRG = 0x15BU;
     // BRG 0; 
     U1BRGH = 0x0U;
     
+    UART1_RxCompleteCallbackRegister(&UART1_RxCompleteCallback);
+    UART1_TxCompleteCallbackRegister(&UART1_TxCompleteCallback);
+    UART1_TxCollisionCallbackRegister(&UART1_TxCollisionCallback);
+    UART1_FramingErrorCallbackRegister(&UART1_FramingErrorCallback);
+    UART1_OverrunErrorCallbackRegister(&UART1_OverrunErrorCallback);
+    UART1_ParityErrorCallbackRegister(&UART1_ParityErrorCallback);
+
+    // UART Frame error interrupt
+    U1STAbits.FERIE = 1;
+    // UART Parity error interrupt
+    U1STAbits.PERIE = 1;
+    // UART Receive Buffer Overflow interrupt
+    U1STAbits.OERIE = 1;
+    // UART Transmit collision interrupt
+    U1STAbits.TXCIE = 1;
+    // UART Auto-Baud Overflow interrupt
+    U1STAbits.ABDOVE = 1;  
+    // UART Receive Interrupt
+    IEC0bits.U1RXIE = 1;
+    // UART Event interrupt
+    IEC11bits.U1EVTIE = 1;
+    // UART Error interrupt
+    IEC3bits.U1EIE = 1;
+    
+    //Make sure to set LAT bit corresponding to TxPin as high before UART initialization
     U1MODEbits.UARTEN = 1;   // enabling UART ON bit
     U1MODEbits.UTXEN = 1;
     U1MODEbits.URXEN = 1;
@@ -127,6 +164,22 @@ void UART1_Initialize(void)
 
 void UART1_Deinitialize(void)
 {
+    // UART Transmit interrupt
+    IFS0bits.U1TXIF = 0;
+    IEC0bits.U1TXIE = 0;
+    
+    // UART Receive Interrupt
+    IFS0bits.U1RXIF = 0;
+    IEC0bits.U1RXIE = 0;
+    
+    // UART Event interrupt
+    IFS11bits.U1EVTIF = 0;
+    IEC11bits.U1EVTIE = 0;
+    
+    // UART Error interrupt
+    IFS3bits.U1EIF = 0;
+    IEC3bits.U1EIE    = 0;
+    
     U1MODE = 0x0U;
     U1MODEH = 0x0U;
     U1STA = 0x80U;
@@ -137,42 +190,42 @@ void UART1_Deinitialize(void)
 
 uint8_t UART1_Read(void)
 {
-    while((U1STAHbits.URXBE == 1))
+    uint8_t data = 0;
+    data = U1RXREG;
+    if(!UART1_IsRxReady())
     {
-        
+        IFS0bits.U1RXIF = 0;
     }
-
-    if ((U1STAbits.OERR == 1))
-    {
-        U1STAbits.OERR = 0;
-    }
-    
-    return (uint8_t)U1RXREG;
+    return data;
 }
 
-void UART1_Write(uint8_t txData)
+void UART1_Write(uint8_t byte)
 {
-    while(U1STAHbits.UTXBF == 1)
-    {
-        
+    while(UART1_IsTxReady() == 0){
+         // Nothing to Process
     }
-
-    U1TXREG = txData;    // Write the data byte to the USART.
+    U1TXREG = byte;
+    if(txInterruptUsed)
+    {
+        IEC0bits.U1TXIE = 1;
+    }
 }
 
 bool UART1_IsRxReady(void)
-{
-    return (U1STAHbits.URXBE == 0);
+{    
+    return (bool)(!U1STAHbits.URXBE);
 }
 
 bool UART1_IsTxReady(void)
 {
-    return ((!U1STAHbits.UTXBF) && U1MODEbits.UTXEN);
+    return (bool)((!U1STAHbits.UTXBF) && U1MODEbits.UTXEN);
 }
 
 bool UART1_IsTxDone(void)
 {
-    return (bool)(U1STAbits.TRMT && U1STAHbits.UTXBE);
+    bool status = false;
+    status = (bool)(U1STAbits.TRMT && U1STAHbits.UTXBE);
+    return status;
 }
 
 void UART1_TransmitEnable(void)
@@ -183,6 +236,21 @@ void UART1_TransmitEnable(void)
 void UART1_TransmitDisable(void)
 {
     U1MODEbits.UTXEN = 0;
+}
+
+void UART1_TransmitInterruptEnable(void)
+{
+    IEC0bits.U1TXIE = 1;
+    txInterruptUsed = true;
+}
+
+void UART1_TransmitInterruptDisable(void)
+{
+    while(!UART1_IsTxDone()){
+         // Nothing to Process
+    }
+    IEC0bits.U1TXIE = 0;
+    txInterruptUsed = false;
 }
 
 void UART1_AutoBaudSet(bool enable)
@@ -202,35 +270,6 @@ bool UART1_AutoBaudEventEnableGet(void)
     return U1INTbits.ABDIE; 
 }
 
-size_t UART1_ErrorGet(void)
-{
-    uartError.status = 0;
-    if(U1STAbits.FERR == 1U)
-    {
-        uartError.status = uartError.status | (uint16_t)UART_ERROR_FRAMING_MASK;
-    }
-    if(U1STAbits.PERR== 1U)
-    {
-        uartError.status = uartError.status| (uint16_t)UART_ERROR_PARITY_MASK;
-    }
-    if(U1STAbits.OERR== 1U)
-    {
-        uartError.status = uartError.status| (uint16_t)UART_ERROR_RX_OVERRUN_MASK;
-        U1STAbits.OERR = 0;
-    }
-    if(U1STAbits.TXCIF== 1U)
-    {
-        uartError.status = uartError.status| (uint16_t)UART_ERROR_TX_COLLISION_MASK;
-        U1STAbits.TXCIF = 0;
-    }
-    if(U1STAbits.ABDOVF== 1U)
-    {
-        uartError.status = uartError.status| (uint16_t)UART_ERROR_AUTOBAUD_OVERFLOW_MASK;
-        U1STAbits.ABDOVF = 0;
-    }
-    
-    return uartError.status;
-}
 
 void UART1_BRGCountSet(uint32_t brgValue)
 {
@@ -280,7 +319,7 @@ uint32_t UART1_BaudRateGet(void)
     uint32_t baudRate;
     
     brgValue = UART1_BRGCountGet();
-    if((U1MODEHbits.BCLKMOD == 1) && (brgValue != 0U))
+    if((U1MODEHbits.BCLKMOD == 1U) && (brgValue != 0U))
     {
         baudRate = UART1_BRG_TO_BAUD_WITH_FRACTIONAL(brgValue);
     }
@@ -293,4 +332,208 @@ uint32_t UART1_BaudRateGet(void)
         baudRate = UART1_BRG_TO_BAUD_WITH_BRGH_0(brgValue);
     }
     return baudRate;
+}
+
+void UART1_TxCollisionInterruptSet(const bool enable)
+{
+    if(enable == true)
+    {
+        U1STAbits.TXCIE = 1;
+    }
+    else 
+    {
+        U1STAbits.TXCIE = 0;
+    }
+}
+
+size_t UART1_ErrorGet(void)
+{
+    size_t fetchUartError = uartError.status;
+    uartError.status = 0;
+    return fetchUartError;
+}
+
+void UART1_RxCompleteCallbackRegister(void (*handler)(void))
+{
+    if(NULL != handler)
+    {
+        UART1_RxCompleteHandler = handler;
+    }
+}
+
+void __attribute__ ((weak)) UART1_RxCompleteCallback(void)
+{ 
+
+} 
+
+void UART1_TxCompleteCallbackRegister(void (*handler)(void))
+{
+    if(NULL != handler)
+    {
+        UART1_TxCompleteHandler = handler;
+    }
+}
+
+void __attribute__ ((weak)) UART1_TxCompleteCallback(void)
+{ 
+
+} 
+
+void UART1_TxCollisionCallbackRegister(void (*handler)(void))
+{
+    if(NULL != handler)
+    {
+        UART1_TxCollisionHandler = handler;
+    }
+}
+
+void __attribute__ ((weak)) UART1_TxCollisionCallback(void)
+{ 
+
+} 
+
+void UART1_FramingErrorCallbackRegister(void (*handler)(void))
+{
+    if(NULL != handler)
+    {
+        UART1_FramingErrorHandler = handler;
+    }
+}
+
+void __attribute__ ((weak)) UART1_FramingErrorCallback(void)
+{ 
+
+} 
+
+void UART1_OverrunErrorCallbackRegister(void (*handler)(void))
+{
+    if(NULL != handler)
+    {
+        UART1_OverrunErrorHandler = handler;
+    }
+}
+
+void __attribute__ ((weak)) UART1_OverrunErrorCallback(void)
+{ 
+
+} 
+
+void UART1_ParityErrorCallbackRegister(void (*handler)(void))
+{
+    if(NULL != handler)
+    {
+        UART1_ParityErrorHandler = handler;
+    }
+}
+
+void __attribute__ ((weak)) UART1_ParityErrorCallback(void)
+{ 
+
+} 
+
+        /* cppcheck-suppress misra-c2012-8.4
+        *
+        * (Rule 8.4) REQUIRED: A compatible declaration shall be visible when an object or 
+        * function with external linkage is defined
+        *
+        * Reasoning: Interrupt declaration are provided by compiler and are available
+        * outside the driver folder
+        */
+void __attribute__ ( ( interrupt, no_auto_psv ) ) _U1TXInterrupt(void)
+{
+    if(NULL != UART1_TxCompleteHandler)
+        {
+            (*UART1_TxCompleteHandler)();
+        }
+    IEC0bits.U1TXIE = 0;
+}
+
+        /* cppcheck-suppress misra-c2012-8.4
+        *
+        * (Rule 8.4) REQUIRED: A compatible declaration shall be visible when an object or 
+        * function with external linkage is defined
+        *
+        * Reasoning: Interrupt declaration are provided by compiler and are available
+        * outside the driver folder
+        */
+void __attribute__ ( ( interrupt, no_auto_psv ) ) _U1RXInterrupt(void)
+{
+    if(NULL != UART1_RxCompleteHandler)
+    {
+        (*UART1_RxCompleteHandler)();
+    }
+}
+
+        /* cppcheck-suppress misra-c2012-8.4
+        *
+        * (Rule 8.4) REQUIRED: A compatible declaration shall be visible when an object or 
+        * function with external linkage is defined
+        *
+        * Reasoning: Interrupt declaration are provided by compiler and are available
+        * outside the driver folder
+        */
+void __attribute__ ( ( interrupt, no_auto_psv ) ) _U1EInterrupt(void)
+{
+    if (U1STAbits.ABDOVF == 1)
+    {
+        uartError.status = (uint16_t)(uartError.status | (uint16_t)UART_ERROR_AUTOBAUD_OVERFLOW_MASK);
+        U1STAbits.ABDOVF = 0;
+    }
+    
+    if (U1STAbits.TXCIF == 1)
+    {
+        uartError.status = (uint16_t)(uartError.status | (uint16_t)UART_ERROR_TX_COLLISION_MASK);
+        if(NULL != UART1_TxCollisionHandler)
+        {
+            (*UART1_TxCollisionHandler)();
+        }
+        
+        U1STAbits.TXCIF = 0;
+    }
+    
+    if (U1STAbits.OERR == 1)
+    {
+        uartError.status = (uint16_t)(uartError.status | (uint16_t)UART_ERROR_RX_OVERRUN_MASK);
+        if(NULL != UART1_OverrunErrorHandler)
+        {
+            (*UART1_OverrunErrorHandler)();
+        }
+        
+        U1STAbits.OERR = 0;
+    }
+    
+    if (U1STAbits.PERR == 1)
+    {
+        uartError.status = (uint16_t)(uartError.status | (uint16_t)UART_ERROR_PARITY_MASK);
+        if(NULL != UART1_ParityErrorHandler)
+        {
+            (*UART1_ParityErrorHandler)();
+        }
+    }
+    
+    if (U1STAbits.FERR == 1)
+    {
+         uartError.status = (uint16_t)(uartError.status | (uint16_t)UART_ERROR_FRAMING_MASK);
+        if(NULL != UART1_FramingErrorHandler)
+        {
+            (*UART1_FramingErrorHandler)();
+        }
+    }
+        
+    IFS3bits.U1EIF = 0;
+}
+
+/* ISR for UART Event Interrupt */
+        /* cppcheck-suppress misra-c2012-8.4
+        *
+        * (Rule 8.4) REQUIRED: A compatible declaration shall be visible when an object or 
+        * function with external linkage is defined
+        *
+        * Reasoning: Interrupt declaration are provided by compiler and are available
+        * outside the driver folder
+        */
+void __attribute__ ( ( interrupt, no_auto_psv ) ) _U1EVTInterrupt(void)
+{
+    U1INTbits.ABDIF = false;
+    IFS11bits.U1EVTIF = false;
 }

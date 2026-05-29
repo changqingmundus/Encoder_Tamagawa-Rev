@@ -15,7 +15,7 @@
 */
 
 /*
-© [2026] Microchip Technology Inc. and its subsidiaries.
+? [2026] Microchip Technology Inc. and its subsidiaries.
 
     Subject to your compliance with these terms, you may use Microchip 
     software and any derivatives exclusively with Microchip products. 
@@ -43,7 +43,7 @@
 #include "../uart2.h"
 
 // Section: Macro Definitions
-#define UART2_CLOCK 36000000U
+#define UART2_CLOCK 40000000U
 #define UART2_BAUD_TO_BRG_WITH_FRACTIONAL(x) (UART2_CLOCK/(x))
 #define UART2_BAUD_TO_BRG_WITH_BRGH_1(x) (UART2_CLOCK/(4U*(x))-1U)
 #define UART2_BAUD_TO_BRG_WITH_BRGH_0(x) (UART2_CLOCK/(16U*(x))-1U)
@@ -51,8 +51,8 @@
 #define UART2_BRG_TO_BAUD_WITH_BRGH_1(x) (UART2_CLOCK/(4U*((x)+1U)))
 #define UART2_BRG_TO_BAUD_WITH_BRGH_0(x) (UART2_CLOCK/(16U*((x)+1U)))
 
-#define UART2_MIN_ACHIEVABLE_BAUD_WITH_FRACTIONAL 34U
-#define UART2_MIN_ACHIEVABLE_BAUD_WITH_BRGH_1 9U
+#define UART2_MIN_ACHIEVABLE_BAUD_WITH_FRACTIONAL 38U
+#define UART2_MIN_ACHIEVABLE_BAUD_WITH_BRGH_1 10U
 
 // Section: Driver Interface
 
@@ -115,8 +115,8 @@ void UART2_Initialize(void)
     U2STA = 0x80U;
     // URXISEL ; UTXBE ; UTXISEL ; URXBE ; STPMD ; TXWRE ; 
     U2STAH = 0x2EU;
-    // BaudRate 115015.97; Frequency 36000000 Hz; BRG 313; 
-    U2BRG = 0x139U;
+    // BaudRate 115273.78; Frequency 40000000 Hz; BRG 347; 
+    U2BRG = 0x15BU;
     // BRG 0; 
     U2BRGH = 0x0U;
     

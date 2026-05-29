@@ -6,6 +6,7 @@
             "id": "conf1",
             "device": "dsPIC33CK256MP502",
             "imagePath": "./out/TamagawaMCU/default.elf",
+            "tool": "Simulator",
             "packs": [
                 {
                     "name": "dsPIC33CK-MP_DFP",
