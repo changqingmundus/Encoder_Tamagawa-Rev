@@ -15,7 +15,7 @@
 */
 
 /*
-? [2026] Microchip Technology Inc. and its subsidiaries.
+© [2026] Microchip Technology Inc. and its subsidiaries.
 
     Subject to your compliance with these terms, you may use Microchip 
     software and any derivatives exclusively with Microchip products. 
@@ -41,6 +41,7 @@
 #include "../pins.h"
 
 // Section: File specific functions
+static void (*SET_InterruptHandler)(void) = NULL;
 
 // Section: Driver Interface Function Definitions
 void PINS_Initialize(void)
@@ -63,7 +64,7 @@ void PINS_Initialize(void)
      ***************************************************************************/
     CNPUA = 0x0000U;
     CNPUB = 0x0000U;
-    CNPDA = 0x0000U;
+    CNPDA = 0x0010U;
     CNPDB = 0x0000U;
 
 
@@ -77,7 +78,7 @@ void PINS_Initialize(void)
     /****************************************************************************
      * Setting the Analog/Digital Configuration SFR(s)
      ***************************************************************************/
-    ANSELA = 0x0016U;
+    ANSELA = 0x0006U;
     ANSELB = 0x0010U;
 
     /****************************************************************************
@@ -93,6 +94,66 @@ void PINS_Initialize(void)
 
      __builtin_write_RPCON(0x0800); // lock PPS
 
+    /*******************************************************************************
+    * Interrupt On Change: positive
+    *******************************************************************************/
+    CNEN0Abits.CNEN0A4 = 1; //Pin : RA4U; 
 
+    /****************************************************************************
+     * Interrupt On Change: flag
+     ***************************************************************************/
+    CNFAbits.CNFA4 = 0;    //Pin : SET
+
+    /****************************************************************************
+     * Interrupt On Change: config
+     ***************************************************************************/
+    CNCONAbits.CNSTYLE = 1; //Config for PORTA
+    CNCONAbits.ON = 1; //Config for PORTA
+
+    /* Initialize IOC Interrupt Handler*/
+    SET_SetInterruptHandler(&SET_CallBack);
+
+    /****************************************************************************
+     * Interrupt On Change: Interrupt Enable
+     ***************************************************************************/
+    IFS0bits.CNAIF = 0; //Clear CNAI interrupt flag
+    IEC0bits.CNAIE = 1; //Enable CNAI interrupt
+}
+
+void __attribute__ ((weak)) SET_CallBack(void)
+{
+
+}
+
+void SET_SetInterruptHandler(void (* InterruptHandler)(void))
+{ 
+    IEC0bits.CNAIE = 0; //Disable CNAI interrupt
+    SET_InterruptHandler = InterruptHandler; 
+    IEC0bits.CNAIE = 1; //Enable CNAI interrupt
+}
+
+/* Interrupt service function for the CNAI interrupt. */
+/* cppcheck-suppress misra-c2012-8.4
+*
+* (Rule 8.4) REQUIRED: A compatible declaration shall be visible when an object or 
+* function with external linkage is defined
+*
+* Reasoning: Interrupt declaration are provided by compiler and are available
+* outside the driver folder
+*/
+void __attribute__ (( interrupt, no_auto_psv )) _CNAInterrupt (void)
+{
+    if(CNFAbits.CNFA4 == 1)
+    {
+        if(SET_InterruptHandler != NULL) 
+        { 
+            SET_InterruptHandler(); 
+        }
+        
+        CNFAbits.CNFA4 = 0;  //Clear flag for Pin - SET
+    }
+    
+    // Clear the flag
+    IFS0bits.CNAIF = 0;
 }
 

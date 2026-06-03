@@ -15,7 +15,7 @@
 */
 
 /*
-? [2026] Microchip Technology Inc. and its subsidiaries.
+© [2026] Microchip Technology Inc. and its subsidiaries.
 
     Subject to your compliance with these terms, you may use Microchip 
     software and any derivatives exclusively with Microchip products. 
@@ -51,6 +51,10 @@ void INTERRUPT_Initialize(void)
     // Priority: 1
     IPC3bits.NVMIP = 1;
     
+    // CNA: Change Notification A
+    // Priority: 1
+    IPC0bits.CNAIP = 1;
+    
     // CCT1: CCP1 Timer Event
     // Priority: 1
     IPC1bits.CCT1IP = 1;
@@ -78,6 +82,7 @@ void INTERRUPT_Deinitialize(void)
     //POR default value of priority
     IPC11bits.DMTIP = 4;
     IPC3bits.NVMIP = 4;
+    IPC0bits.CNAIP = 4;
     IPC1bits.CCT1IP = 4;
     IPC47bits.U1EVTIP = 4;
     IPC12bits.U1EIP = 4;

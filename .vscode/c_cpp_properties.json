@@ -7,9 +7,9 @@
                 "${workspaceFolder}/TamagawaMCU/mcc/mcc_generated_files",
                 "${workspaceFolder}/TamagawaMCU/mcc/user",
                 "${workspaceFolder}/TamagawaMCU/mcc",
-                "D:/Microchip/xc16/include"
+                "D:/Microchip/xc16/v2.10/include"
             ],
-            "compilerPath": "D:/Microchip/xc16/bin/xc16-gcc.exe",
+            "compilerPath": "D:/Microchip/xc16/v2.10/bin/xc16-gcc.exe",
             "intelliSenseMode": "gcc-x86",
             "browse": {
                 "limitSymbolsToIncludedHeaders": true,
@@ -19,7 +19,7 @@
                     "${workspaceFolder}/TamagawaMCU/mcc/mcc_generated_files",
                     "${workspaceFolder}/TamagawaMCU/mcc/user",
                     "${workspaceFolder}/TamagawaMCU/mcc",
-                    "D:/Microchip/xc16/include"
+                    "D:/Microchip/xc16/v2.10/include"
                 ]
             }
         }

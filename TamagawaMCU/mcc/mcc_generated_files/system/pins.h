@@ -16,7 +16,7 @@
 */
 
 /*
-? [2026] Microchip Technology Inc. and its subsidiaries.
+© [2026] Microchip Technology Inc. and its subsidiaries.
 
     Subject to your compliance with these terms, you may use Microchip 
     software and any derivatives exclusively with Microchip products. 
@@ -144,6 +144,57 @@
  * @return   none  
  */
 #define IO_RA3_SetDigitalOutput() (_TRISA3 = 0)
+
+/**
+ * @ingroup  pinsdriver
+ * @brief    Sets the RA4 GPIO Pin which has a custom name of SET to High
+ * @pre      The RA4 must be set as Output Pin             
+ * @param    none
+ * @return   none  
+ */
+#define SET_SetHigh()          (_LATA4 = 1)
+
+/**
+ * @ingroup  pinsdriver
+ * @brief    Sets the RA4 GPIO Pin which has a custom name of SET to Low
+ * @pre      The RA4 must be set as Output Pin
+ * @param    none
+ * @return   none  
+ */
+#define SET_SetLow()           (_LATA4 = 0)
+
+/**
+ * @ingroup  pinsdriver
+ * @brief    Toggles the RA4 GPIO Pin which has a custom name of SET
+ * @pre      The RA4 must be set as Output Pin
+ * @param    none
+ * @return   none  
+ */
+#define SET_Toggle()           (_LATA4 ^= 1)
+
+/**
+ * @ingroup  pinsdriver
+ * @brief    Reads the value of the RA4 GPIO Pin which has a custom name of SET
+ * @param    none
+ * @return   none  
+ */
+#define SET_GetValue()         _RA4
+
+/**
+ * @ingroup  pinsdriver
+ * @brief    Configures the RA4 GPIO Pin which has a custom name of SET as Input
+ * @param    none
+ * @return   none  
+ */
+#define SET_SetDigitalInput()  (_TRISA4 = 1)
+
+/**
+ * @ingroup  pinsdriver
+ * @brief    Configures the RA4 GPIO Pin which has a custom name of SET as Output
+ * @param    none
+ * @return   none  
+ */
+#define SET_SetDigitalOutput() (_TRISA4 = 0)
 
 /**
  * @ingroup  pinsdriver
@@ -357,6 +408,22 @@
  */
 void PINS_Initialize(void);
 
+/**
+ * @ingroup  pinsdriver
+ * @brief    This function is callback for SET Pin
+ * @param    none
+ * @return   none   
+ */
+void SET_CallBack(void);
+
+
+/**
+ * @ingroup    pinsdriver
+ * @brief      This function assigns a function pointer with a callback address
+ * @param[in]  InterruptHandler - Address of the callback function 
+ * @return     none  
+ */
+void SET_SetInterruptHandler(void (* InterruptHandler)(void));
 
 
 #endif
