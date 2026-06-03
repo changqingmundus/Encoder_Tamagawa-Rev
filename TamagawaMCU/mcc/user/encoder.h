@@ -38,7 +38,7 @@ int Encoder_GetDataSize(ENCODER *encoder);
  */
 void Encoder_Read_Data(ENCODER *encoder);
 
-
+void Encoder_Clear_Data(void);
 
 //////// 项目代码 ////////////
 void Encoder_init(ENCODER *en);

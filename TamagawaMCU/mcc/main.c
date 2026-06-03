@@ -46,6 +46,7 @@ int main(void)
     SYSTEM_Initialize();
     DEE_Init();
     Encoder_init(&encoder);
+
     while(1)
     {
         if(isUartReceived){

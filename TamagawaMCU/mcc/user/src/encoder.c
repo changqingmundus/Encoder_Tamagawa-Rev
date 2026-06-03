@@ -82,3 +82,9 @@ void Encoder_init(ENCODER *en){
     en->stSize = 3;
     en->addr = en;
 }
+
+void Encoder_Clear_Data(void){
+    // 这里可以根据实际情况添加清零操作，例如发送特定命令给编码器等
+    // 目前假设清零操作是通过某个特定的时序来完成的，可以在这里实现
+    
+}
