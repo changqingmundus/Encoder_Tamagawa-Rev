@@ -1,10 +1,12 @@
 #include "encoder.h"
 #include "timer/delay.h"
-#include "uart/uart2.h"
+#include "uart/uart1.h"
 #include "system/pins.h"
 
 
 ENCODER encoder;
+
+uint32_t encoder_zero_ABS = 0; // 注意无static
 
 int Encoder_GetDataSize(ENCODER *encoder){
     if(encoder == NULL || encoder ->addr == 0x00)
@@ -53,8 +55,8 @@ void Encoder_Read_Data(ENCODER *encoder)
     ENCODER_CLR_CLOCK_PIN();
     Delay_xuS(ENCODER_CLOCK_PRELOW_TIME);
 
-    uint32_t mtData = Encoder_ReadData_Bits(encoder, encoder->mtSize*8);
-    uint32_t stData = Encoder_ReadData_Bits(encoder, encoder->stSize*8);
+    uint32_t mtData = Encoder_ReadData_Bits(encoder, 12);
+    uint32_t stData = Encoder_ReadData_Bits(encoder, 19);
     uint8_t err_warn_crcData = Encoder_ReadData_Bits(encoder, 8);
     Delay_xuS(ENCODER_CLOCK_POSTHIGH_TIME);
 
@@ -83,8 +85,12 @@ void Encoder_init(ENCODER *en){
     en->addr = en;
 }
 
-void Encoder_Clear_Data(void){
-    // 这里可以根据实际情况添加清零操作，例如发送特定命令给编码器等
-    // 目前假设清零操作是通过某个特定的时序来完成的，可以在这里实现
-    
+void Encoder_Clear_Data(void) {
+    Encoder_Read_Data(&encoder); // 先读取一次数据，确保 encoder.data 中有实时的 ABS 数据
+    // 先拆解当前 encoder.data[]，计算 ABS
+    uint32_t abs = 0;
+    for (int i = 0; i < encoder.stSize; i++) {
+        abs |= ((uint32_t)encoder.data[encoder.mtSize + i]) << (8 * i);
+    }
+    encoder_zero_ABS = abs;
 }

@@ -23,11 +23,12 @@
 #include "uart/uart1.h"
 #include "encoder.h"
 #include "tamagawa.h"
+#include "cleardata.h"
 
 /*
     Main application
 */
-
+#include "uart/uart1.h"
 #include "timer/sccp1.h"
 #include <stdint.h>
 
@@ -43,6 +44,8 @@ int main(void)
     SYSTEM_Initialize();
     DEE_Init();
     Encoder_init(&encoder);
+    SET_SetInterruptHandler(ClearData_CN_Callback);
+    Timer1_TimeoutCallbackRegister(ClearData_Timer_Callback);
 
     while(1)
     {
@@ -57,13 +60,17 @@ int main(void)
             Encoder_Read_Data(&encoder);
             encoderData.ABS=0;
             encoderData.ABM=0;
+            uint32_t abs_cur = 0;
             uint8_t dataIndex = 0;
             for(dataIndex = 0; dataIndex<encoder.mtSize; dataIndex++){
                 encoderData.ABM |= ((uint32_t)encoder.data[dataIndex]) << (8 * dataIndex);
             }
             for(dataIndex = 0; dataIndex<encoder.stSize; dataIndex++){
-                encoderData.ABS |= ((uint32_t)encoder.data[encoder.mtSize + dataIndex]) << (8 * dataIndex);
+                abs_cur |= ((uint32_t)encoder.data[encoder.mtSize + dataIndex]) << (8 * dataIndex);
             }
+            int32_t rel_abs = abs_cur - encoder_zero_ABS;
+            if (rel_abs < 0) rel_abs += ABS_MAX_VALUE + 1;
+            encoderData.ABS = rel_abs;
             Tamagawa_Process(&encoderData);
         }
         if(ti.status == 2){

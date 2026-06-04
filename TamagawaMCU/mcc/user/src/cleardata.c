@@ -2,6 +2,7 @@
 #include "encoder.h" // 確保引入了包含 Encoder_Clear_Data() 的標頭檔
 #include "system\pins.h"
 #include "timer\sccp1.h"
+#include "uart\uart1.h"
 
 // 全局變量定義
 volatile uint8_t high_time_sec = 0; // 記錄高電平持續的秒數
@@ -12,10 +13,12 @@ volatile uint8_t is_counting = 0;   // 是否正在計時中
  * @note  請在 MCC 的 pin_manager.c 的 _CNInterrupt 中呼叫此函式
  */
 void ClearData_CN_Callback(void) {
+     DELAY_milliseconds(20); //xms 消抖，根據實際情況調整
      uint8_t ClearDataFlag = ClearData(); // 讀取 RA4 的當前狀態，觸發上升沿檢測
     // 捕捉到上升沿（剛接上 VCC）
     if(ClearDataFlag == 1) {
         if(is_counting == 0) {
+            UART1_Drv.Write(0x66);
             is_counting = 1;
             high_time_sec = 0;   // 秒數計數器清零
             SCCP1_Timer_Start();  // 啟動定時器（每 1 秒進一次中斷）

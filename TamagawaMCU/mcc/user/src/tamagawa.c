@@ -22,10 +22,10 @@ static void Tamagawa_WriteB(uint8_t byte){
 static void CRC(uint8_t *crc, uint8_t data)
 {
     *crc^=data;
-    
+    uint8_t ploy=0x01;
     for(uint8_t i=0;i<8;i++){
         if(*crc & 0x80)
-            *crc = (*crc<<1) ^ 0x01;
+            *crc = (*crc<<1) ^ ploy;
         else
             *crc <<=1;
     }

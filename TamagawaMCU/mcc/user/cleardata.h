@@ -4,7 +4,7 @@
 #include "xc.h"
 #include <stdint.h>
 
-#define SET_GetValue()   ClearData()
+#define ClearData() SET_GetValue()
 
 // 宣告外部可能需要關心的狀態標誌（可選）
 extern volatile uint8_t high_time_sec;
