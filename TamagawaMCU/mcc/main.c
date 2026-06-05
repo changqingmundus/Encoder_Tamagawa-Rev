@@ -32,12 +32,9 @@
 #include "timer/sccp1.h"
 #include <stdint.h>
 
-
 uint8_t test_triggered = 0;
 uint8_t test_Data = 0b10101100;
 uint8_t uartReceiveData = 0;
-
-
 
 int main(void)
 {
@@ -65,11 +62,12 @@ int main(void)
             for(dataIndex = 0; dataIndex<encoder.mtSize; dataIndex++){
                 encoderData.ABM |= ((uint32_t)encoder.data[dataIndex]) << (8 * dataIndex);
             }
-            for(dataIndex = 0; dataIndex<encoder.stSize; dataIndex++){
-                abs_cur |= ((uint32_t)encoder.data[encoder.mtSize + dataIndex]) << (8 * dataIndex);
+            for (dataIndex = 0; dataIndex < encoder.stSize; dataIndex++) {
+            abs_cur |= ((uint32_t)encoder.data[encoder.mtSize + dataIndex]) << (8 * (encoder.stSize - 1 - dataIndex));
             }
             int32_t rel_abs = abs_cur - encoder_zero_ABS;
             if (rel_abs < 0) rel_abs += ABS_MAX_VALUE + 1;
+            rel_abs = ((rel_abs & 0x0000FF) << 16) | (rel_abs & 0x00FF00) | ((rel_abs & 0xFF0000) >> 16);   
             encoderData.ABS = rel_abs;
             Tamagawa_Process(&encoderData);
         }
