@@ -15,6 +15,9 @@
 #define ENCODER_CLOCK_TIME 1
 #define ENCODER_CLOCK_POSTHIGH_TIME 2
 
+#define ABS_MAX_VALUE 0x7FFFF
+
+extern uint32_t encoder_zero_ABS;//用于存储编码器的零点位置（多圈数据），以便在需要时进行数据清零处理
 
 typedef struct ENCODER_T{
     struct ENCODER_T *addr; // 用于判断是否初始化
@@ -38,7 +41,7 @@ int Encoder_GetDataSize(ENCODER *encoder);
  */
 void Encoder_Read_Data(ENCODER *encoder);
 
-
+void Encoder_Clear_Data(void);
 
 //////// 项目代码 ////////////
 void Encoder_init(ENCODER *en);
