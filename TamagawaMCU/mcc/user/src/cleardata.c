@@ -18,7 +18,6 @@ void ClearData_CN_Callback(void) {
     // 捕捉到上升沿（剛接上 VCC）
     if(ClearDataFlag == 1) {
         if(is_counting == 0) {
-            UART1_Drv.Write(0x66);
             is_counting = 1;
             high_time_sec = 0;   // 秒數計數器清零
             SCCP1_Timer_Start();  // 啟動定時器（每 1 秒進一次中斷）

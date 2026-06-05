@@ -88,9 +88,9 @@ void Encoder_init(ENCODER *en){
 void Encoder_Clear_Data(void) {
     Encoder_Read_Data(&encoder); // 先读取一次数据，确保 encoder.data 中有实时的 ABS 数据
     // 先拆解当前 encoder.data[]，计算 ABS
-    uint32_t abs = 0;
+    int32_t abs = 0;
     for (int i = 0; i < encoder.stSize; i++) {
-        abs |= ((uint32_t)encoder.data[encoder.mtSize + i]) << (8 * i);
+        abs |= ((uint32_t)encoder.data[encoder.mtSize + i]) << (8 * (encoder.stSize - 1 - i));
     }
     encoder_zero_ABS = abs;
 }
