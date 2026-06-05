@@ -7,6 +7,7 @@ Package-*
 private/
 _build/
 !cmake/**/user.cmake
-cmake/**/.generated/*
-cmake/**/CMake*
+!cmake/**/.generated/*
+!cmake/**/CMake*
+!cmake/**/cmakepresets.json
 out/
