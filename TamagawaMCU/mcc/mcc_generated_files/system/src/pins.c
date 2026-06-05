@@ -15,7 +15,7 @@
 */
 
 /*
-© [2026] Microchip Technology Inc. and its subsidiaries.
+? [2026] Microchip Technology Inc. and its subsidiaries.
 
     Subject to your compliance with these terms, you may use Microchip 
     software and any derivatives exclusively with Microchip products. 
@@ -39,6 +39,7 @@
 #include <xc.h>
 #include <stddef.h>
 #include "../pins.h"
+#include "user/cleardata.h"
 
 // Section: File specific functions
 static void (*SET_InterruptHandler)(void) = NULL;
@@ -152,7 +153,6 @@ void __attribute__ (( interrupt, no_auto_psv )) _CNAInterrupt (void)
         
         CNFAbits.CNFA4 = 0;  //Clear flag for Pin - SET
     }
-    
     // Clear the flag
     IFS0bits.CNAIF = 0;
 }
