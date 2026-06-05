@@ -53,8 +53,8 @@ void Encoder_Read_Data(ENCODER *encoder)
     ENCODER_CLR_CLOCK_PIN();
     Delay_xuS(ENCODER_CLOCK_PRELOW_TIME);
 
-    uint32_t mtData = Encoder_ReadData_Bits(encoder, encoder->mtSize*8);
-    uint32_t stData = Encoder_ReadData_Bits(encoder, encoder->stSize*8);
+    uint32_t mtData = Encoder_ReadData_Bits(encoder, encoder->mtSize);
+    uint32_t stData = Encoder_ReadData_Bits(encoder, encoder->stSize);
     uint8_t err_warn_crcData = Encoder_ReadData_Bits(encoder, 8);
     Delay_xuS(ENCODER_CLOCK_POSTHIGH_TIME);
 
@@ -78,7 +78,7 @@ void Encoder_Read_Data(ENCODER *encoder)
 
 void Encoder_init(ENCODER *en){
     //if (en == NULL) return;
-    en->mtSize = 2;
-    en->stSize = 3;
+    en->mtSize = 12;
+    en->stSize = 19;
     en->addr = en;
 }

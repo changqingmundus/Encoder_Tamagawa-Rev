@@ -3,7 +3,7 @@
 
 #include "xc.h"
 #include "libpic30.h"
-#include "system\pins.h"
+#include "system/pins.h"
 
 #define ENCODER_SET_CLOCK_PIN()   MA_SetHigh()
 #define ENCODER_CLR_CLOCK_PIN()   MA_SetLow()

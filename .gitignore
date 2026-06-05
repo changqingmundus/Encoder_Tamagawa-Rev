@@ -1,4 +1,5 @@
 .generated_files/
+.cache/
 build/
 dist/
 nbproject/

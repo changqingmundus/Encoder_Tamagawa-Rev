@@ -28,9 +28,6 @@
     Main application
 */
 
-#include "tamagawa.h"
-#include "encoder.h"
-#include "uart/uart1.h"
 #include "timer/sccp1.h"
 #include <stdint.h>
 

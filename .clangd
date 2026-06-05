@@ -1,0 +1,12 @@
+CompileFlags:
+  # 1. 強制讓 clangd 去讀 build 資料夾底下的編譯路徑
+  CompilationDatabase: "build"
+
+  # 2. 讓 clangd 忽略它看不懂的 Microchip 特有參數，避免噴出 Unknown argument 錯誤
+  Remove: [
+    -mdfp=*,
+    -mlarge-code,
+    -msmart-io=*,
+    -msfr-warn=*,
+    -mcpu=*
+  ]

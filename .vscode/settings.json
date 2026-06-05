@@ -1,9 +1,10 @@
 {
-    "mplab.clangd.compileCommandsDir": "${workspaceFolder}\\_build\\TamagawaMCU\\default",
+    "mplab.clangd.compileCommandsDir": "${workspaceFolder}\\build\\TamagawaMCU\\default",
     "memory-inspector.debugTypes": [
         "arm-debugger",
         "embedded-debug",
         "gdb",
         "mplab-core-da"
-    ]
+    ],
+    "cmake.sourceDirectory": "/home/coder/project/Encoder_Tamagawa-Rev/cmake/TamagawaMCU/default"
 }
