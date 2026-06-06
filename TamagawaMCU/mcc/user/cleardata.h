@@ -5,6 +5,8 @@
 #include <stdint.h>
 
 #define ClearData() SET_GetValue()
+#define DEE_ENCODER_ZERO_L 100
+#define DEE_ENCODER_ZERO_H 101
 
 // 宣告外部可能需要關心的狀態標誌（可選）
 extern volatile uint8_t high_time_sec;

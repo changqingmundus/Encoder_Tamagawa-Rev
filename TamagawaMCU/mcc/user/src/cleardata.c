@@ -1,8 +1,9 @@
 #include "cleardata.h"
 #include "encoder.h" // 確保引入了包含 Encoder_Clear_Data() 的標頭檔
-#include "system\pins.h"
-#include "timer\sccp1.h"
-#include "uart\uart1.h"
+#include "system/pins.h"
+#include "timer/sccp1.h"
+#include "dee/dee.h"
+#include "timer/delay.h"
 
 // 全局變量定義
 volatile uint8_t high_time_sec = 0; // 記錄高電平持續的秒數
@@ -51,6 +52,8 @@ void ClearData_Timer_Callback(void) {
                 
                 // ======= 執行編碼器數據清零代碼 =======
                 Encoder_Clear_Data(); 
+                DEE_Write(DEE_ENCODER_ZERO_L, (uint16_t)(encoder_zero_ABS & 0xFFFF));
+                DEE_Write(DEE_ENCODER_ZERO_H, (uint16_t)(encoder_zero_ABS >> 16));
                 // ===================================
             }
             

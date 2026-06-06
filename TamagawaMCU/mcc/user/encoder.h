@@ -4,6 +4,8 @@
 #include "xc.h"
 #include "libpic30.h"
 #include "system/pins.h"
+#include "cleardata.h"
+#include "dee/dee.h"
 
 #define ENCODER_SET_CLOCK_PIN()   MA_SetHigh()
 #define ENCODER_CLR_CLOCK_PIN()   MA_SetLow()
@@ -24,6 +26,8 @@ typedef struct ENCODER_T{
 
     uint8_t mtSize;              // 累计运行圈数 位长度
     uint8_t stSize;              // 绝对位置数据 位长度
+    uint8_t mtbit;               // 多圈位數，用於時鐘脈衝
+    uint8_t stbit;               // 單圈位數，用於時鐘脈衝
 
     uint8_t data[ENCODER_DATA_MAX_LENGTH];             // 数据存储 最大长度为80位
 } ENCODER; //编码器对象，参数和数据都在此存储
@@ -42,6 +46,8 @@ int Encoder_GetDataSize(ENCODER *encoder);
 void Encoder_Read_Data(ENCODER *encoder);
 
 void Encoder_Clear_Data(void);
+
+void Encoder_LoadZeroABS(void);
 
 //////// 项目代码 ////////////
 void Encoder_init(ENCODER *en);

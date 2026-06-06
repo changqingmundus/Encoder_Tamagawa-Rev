@@ -29,9 +29,6 @@
     Main application
 */
 
-#include "tamagawa.h"
-#include "encoder.h"
-#include "uart/uart1.h"
 #include "timer/sccp1.h"
 #include <stdint.h>
 
@@ -62,15 +59,25 @@ int main(void)
             encoderData.ABM=0;
             uint32_t abs_cur = 0;
             uint8_t dataIndex = 0;
+            int32_t rel_abs = 0;
             for(dataIndex = 0; dataIndex<encoder.mtSize; dataIndex++){
                 encoderData.ABM |= ((uint32_t)encoder.data[dataIndex]) << (8 * dataIndex);
             }
+            if(encoder_zero_ABS == 0)
+            {
+                for(dataIndex = 0; dataIndex<encoder.stSize; dataIndex++){
+                    rel_abs |= ((uint32_t)encoder.data[encoder.mtSize + dataIndex] << (8 * dataIndex));
+                }
+            }
+            else
+            {
             for (dataIndex = 0; dataIndex < encoder.stSize; dataIndex++) {
             abs_cur |= ((uint32_t)encoder.data[encoder.mtSize + dataIndex]) << (8 * (encoder.stSize - 1 - dataIndex));
             }
-            int32_t rel_abs = abs_cur - encoder_zero_ABS;
+            rel_abs = abs_cur - encoder_zero_ABS;
             if (rel_abs < 0) rel_abs += ABS_MAX_VALUE + 1;
-            rel_abs = ((rel_abs & 0x0000FF) << 16) | (rel_abs & 0x00FF00) | ((rel_abs & 0xFF0000) >> 16);   
+            rel_abs = ((rel_abs & 0x0000FF) << 16) | (rel_abs & 0x00FF00) | ((rel_abs & 0xFF0000) >> 16);
+            }
             encoderData.ABS = rel_abs;
             Tamagawa_Process(&encoderData);
         }

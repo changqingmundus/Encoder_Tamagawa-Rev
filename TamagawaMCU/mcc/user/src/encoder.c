@@ -3,7 +3,6 @@
 #include "uart/uart1.h"
 #include "system/pins.h"
 
-
 ENCODER encoder;
 
 uint32_t encoder_zero_ABS = 0; // 注意无static
@@ -55,8 +54,8 @@ void Encoder_Read_Data(ENCODER *encoder)
     ENCODER_CLR_CLOCK_PIN();
     Delay_xuS(ENCODER_CLOCK_PRELOW_TIME);
 
-    uint32_t mtData = Encoder_ReadData_Bits(encoder, encoder->mtSize*8);
-    uint32_t stData = Encoder_ReadData_Bits(encoder, encoder->stSize*8);
+    uint32_t mtData = Encoder_ReadData_Bits(encoder, encoder->mtbit);
+    uint32_t stData = Encoder_ReadData_Bits(encoder, encoder->stbit);
     uint8_t err_warn_crcData = Encoder_ReadData_Bits(encoder, 8);
     Delay_xuS(ENCODER_CLOCK_POSTHIGH_TIME);
 
@@ -80,9 +79,14 @@ void Encoder_Read_Data(ENCODER *encoder)
 
 void Encoder_init(ENCODER *en){
     //if (en == NULL) return;
-    en->mtSize = 12;
-    en->stSize = 19;
+    en->mtSize = 2;
+    en->stSize = 3;
+    
+    en->mtbit = 12;
+    en->stbit = 19;
     en->addr = en;
+
+    Encoder_LoadZeroABS();
 }
 
 void Encoder_Clear_Data(void) {
@@ -93,4 +97,19 @@ void Encoder_Clear_Data(void) {
         abs |= ((uint32_t)encoder.data[encoder.mtSize + i]) << (8 * (encoder.stSize - 1 - i));
     }
     encoder_zero_ABS = abs;
+}
+
+void Encoder_LoadZeroABS(void)
+{
+    uint16_t lowbyte;
+    uint16_t highbyte;
+
+    DEE_Read(DEE_ENCODER_ZERO_L, &lowbyte);
+    DEE_Read(DEE_ENCODER_ZERO_H, &highbyte);
+    
+    encoder_zero_ABS = ((uint32_t)highbyte << 16) | lowbyte;
+    if(encoder_zero_ABS == 0xFFFFFFFF)
+    {
+        encoder_zero_ABS = 0;
+    }
 }
