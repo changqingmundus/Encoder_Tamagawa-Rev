@@ -1,6 +1,5 @@
 #include "tamagawa.h"
 #include "uart/uart1.h"
-#include "encoder.h"
 #include <stdint.h>
 
 TamagawaInterface ti;

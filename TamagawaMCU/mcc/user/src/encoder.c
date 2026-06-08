@@ -1,7 +1,5 @@
 #include "encoder.h"
 #include "timer/delay.h"
-#include "uart/uart1.h"
-#include "system/pins.h"
 
 ENCODER encoder;
 

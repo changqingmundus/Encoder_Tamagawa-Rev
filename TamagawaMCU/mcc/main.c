@@ -20,7 +20,6 @@
 */
 #include "dee/dee.h"
 #include "system/system.h"
-#include "uart/uart1.h"
 #include "encoder.h"
 #include "tamagawa.h"
 #include "cleardata.h"

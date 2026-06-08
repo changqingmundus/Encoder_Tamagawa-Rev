@@ -1,6 +1,5 @@
 #include "cleardata.h"
 #include "encoder.h" // 確保引入了包含 Encoder_Clear_Data() 的標頭檔
-#include "system/pins.h"
 #include "timer/sccp1.h"
 #include "dee/dee.h"
 #include "timer/delay.h"
@@ -55,6 +54,10 @@ void ClearData_Timer_Callback(void) {
                 DEE_Write(DEE_ENCODER_ZERO_L, (uint16_t)(encoder_zero_ABS & 0xFFFF));
                 DEE_Write(DEE_ENCODER_ZERO_H, (uint16_t)(encoder_zero_ABS >> 16));
                 // ===================================
+            }
+            else if (high_time_sec >= 30 && high_time_sec < 60 ) {
+                DEE_Write(DEE_ENCODER_ZERO_L, 0);
+                DEE_Write(DEE_ENCODER_ZERO_H,0);            
             }
             
             // 不管符不符合時間，只要放開了就停止這次計時
