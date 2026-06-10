@@ -38,7 +38,7 @@ void ClearData_Timer_Callback(void) {
             high_time_sec++; // 高電平依然存在，秒數加 1
             
             // 如果時間已經達到或超過 15 秒，判定為超時無效
-            if(high_time_sec >= 15) {
+            if(high_time_sec > 60) {
                 SCCP1_Timer_Stop();  // 停止計時
                 is_counting = 0;    // 重置狀態，不清零，直接結束
                 high_time_sec = 0;
@@ -55,9 +55,9 @@ void ClearData_Timer_Callback(void) {
                 DEE_Write(DEE_ENCODER_ZERO_H, (uint16_t)(encoder_zero_ABS >> 16));
                 // ===================================
             }
-            else if (high_time_sec >= 30 && high_time_sec < 60 ) {
+            else if (high_time_sec >= 30 && high_time_sec <= 60 ) {
                 DEE_Write(DEE_ENCODER_ZERO_L, 0);
-                DEE_Write(DEE_ENCODER_ZERO_H,0);            
+                DEE_Write(DEE_ENCODER_ZERO_H, 0);            
             }
             
             // 不管符不符合時間，只要放開了就停止這次計時
